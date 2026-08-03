@@ -7,6 +7,7 @@ import sys
 import getopt
 import json
 import datetime
+import re
 
 # ----------------------------------------------------
 # default config values
@@ -157,6 +158,15 @@ def format_query(s_query, config):
 
     for var, val in config['variables'].items():
         s_result = s_result.replace(var, val)
+
+    # BigQuery requires fully-qualified table names to be quoted when a
+    # project ID contains dash-delimited segments that begin with a digit
+    # (for example, generated project IDs such as project-...-0b5c-...).
+    # The original OHDSI scripts emit project.dataset.table without quotes.
+    table_ref = re.compile(
+        r"(?<!`)\b([A-Za-z][A-Za-z0-9-]*\.[A-Za-z_][A-Za-z0-9_]*\.[A-Za-z_][A-Za-z0-9_]*)\b(?!`)"
+    )
+    s_result = table_ref.sub(r"`\1`", s_result)
 
     print(s_result)
     return s_result
