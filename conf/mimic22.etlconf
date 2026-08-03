@@ -1,0 +1,68 @@
+{
+  "comment": "MIMIC-IV 2.2 PhysioNet to OMOP CDM 5.3.1",
+  "variables": {
+    "@source_project": "physionet-data",
+    "@core_dataset": "mimiciv_2_2_hosp",
+    "@hosp_dataset": "mimiciv_2_2_hosp",
+    "@icu_dataset": "mimiciv_2_2_icu",
+
+    "@voc_project": "your-gcp-project",
+    "@voc_dataset": "your-vocabulary-dataset",
+
+    "@wf_project": "your-gcp-project",
+    "@wf_dataset": "your-etl-dataset",
+
+    "@etl_project": "your-gcp-project",
+    "@etl_dataset": "your-etl-dataset",
+
+    "@metrics_project": "your-gcp-project",
+    "@metrics_dataset": "your-metrics-dataset",
+
+    "@atlas_project": "your-gcp-project",
+    "@atlas_dataset": "your-omop-dataset",
+
+    "@waveforms_csv_path": ""
+  },
+  "workflows": [
+    {
+      "workflow": "ddl",
+      "type": "sql",
+      "conf": "workflow_ddl.conf"
+    },
+    {
+      "workflow": "staging",
+      "type": "sql",
+      "conf": "workflow_staging.conf"
+    },
+    {
+      "workflow": "etl",
+      "type": "sql",
+      "conf": "workflow_etl.conf"
+    },
+    {
+      "workflow": "vocabulary_refresh",
+      "type": "py",
+      "conf": "workflow_vocabulary_refresh.conf"
+    },
+    {
+      "workflow": "ut",
+      "type": "sql",
+      "conf": "workflow_ut.conf"
+    },
+    {
+      "workflow": "qa",
+      "type": "sql",
+      "conf": "workflow_qa.conf"
+    },
+    {
+      "workflow": "metrics",
+      "type": "sql",
+      "conf": "workflow_metrics.conf"
+    },
+    {
+      "workflow": "gen_scripts",
+      "type": "py",
+      "conf": "workflow_gen_scripts.conf"
+    }
+  ]
+}
