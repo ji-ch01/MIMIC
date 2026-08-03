@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE `@etl_project`.@etl_dataset.lk_outputevents AS
+CREATE OR REPLACE TABLE @etl_project.@etl_dataset.lk_outputevents AS
 SELECT
     src.subject_id                  AS subject_id,
     src.hadm_id                     AS hadm_id,
@@ -14,14 +14,14 @@ SELECT
     src.load_row_id         AS load_row_id,
     src.trace_id            AS trace_id
 FROM
-    `@etl_project`.@etl_dataset.src_outputevents src
+    @etl_project.@etl_dataset.src_outputevents src
 INNER JOIN
-    `@etl_project`.@etl_dataset.src_d_items di
+    @etl_project.@etl_dataset.src_d_items di
         ON  src.itemid = di.itemid
 ;
 
 
-CREATE OR REPLACE TABLE `@etl_project`.@etl_dataset.lk_outputevents_mapped AS
+CREATE OR REPLACE TABLE @etl_project.@etl_dataset.lk_outputevents_mapped AS
 SELECT
     FARM_FINGERPRINT(GENERATE_UUID())               AS measurement_id,
     src.subject_id                                  AS subject_id,
@@ -52,15 +52,16 @@ SELECT
     src.load_row_id                                 AS load_row_id,
     src.trace_id                                    AS trace_id
 FROM
-    `@etl_project`.@etl_dataset.lk_outputevents src
-LEFT JOIN `@etl_project`.@etl_dataset.concept c
+    @etl_project.@etl_dataset.lk_outputevents src
+LEFT JOIN @etl_project.@etl_dataset.voc_concept c
     ON src.source_code = c.concept_code AND c.vocabulary_id = 'mimiciv_outputevents'
-LEFT JOIN `@etl_project`.@etl_dataset.concept_relationship cr
+LEFT JOIN @etl_project.@etl_dataset.voc_concept_relationship cr
     ON  c.concept_id = cr.concept_id_1
-LEFT JOIN `@etl_project`.@etl_dataset.concept c2
+    AND cr.relationship_id = 'Maps to'
+LEFT JOIN @etl_project.@etl_dataset.voc_concept c2
     ON cr.concept_id_2 = c2.concept_id
     AND c2.standard_concept = 'S'
     AND c2.invalid_reason IS NULL
-LEFT JOIN `@etl_project`.@etl_dataset.lk_meas_unit_concept uc
+LEFT JOIN @etl_project.@etl_dataset.lk_meas_unit_concept uc
     ON  src.valueuom = uc.source_code
 ;
